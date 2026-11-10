@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>블로그핏 (BlogFit) - 네이버 블로그 상위노출 키워드 & 글자수 진단기</title>
+  <meta name="description" content="네이버 블로그 상위노출의 핵심인 공백 제외 글자수, 타겟 키워드 반복 빈도(3~7회 적정성), 형태소 빈출 단어 분석을 1초 만에 진단하는 블로거 필수 도구입니다.">
+  <meta property="og:title" content="블로그핏 (BlogFit) - 네이버 블로그 상위노출 키워드 & 글자수 진단기">
+  <meta property="og:description" content="네이버 홈판 노출을 위한 글자수·키워드 밀도·어뷰징 위험도를 실시간으로 체크하세요.">
+  <meta property="og:type" content="website">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Pretendard Font -->
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Pretendard', 'sans-serif'],
+          },
+          colors: {
+            naver: {
+              50: '#ecfdf5',
+              100: '#d1fae5',
+              500: '#10b981',
+              600: '#059669',
+              green: '#03C75A',
+              greenDark: '#02a84c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .highlight-keyword { background-color: #fef08a; color: #854d0e; font-weight: 700; border-radius: 3px; padding: 0 2px; }
+  </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-2.5">
+        <span class="text-2xl">✍️</span>
+        <div>
+          <span class="font-bold text-xl tracking-tight text-slate-900">블로그핏 <span class="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full font-semibold border border-emerald-100">BlogFit</span></span>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2 text-xs font-semibold text-slate-500">
+        <span class="hidden sm:inline">네이버 블로그 상위노출 알고리즘 최적화 툴</span>
+        <button onclick="loadSampleText()" class="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">샘플 글 불러오기</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Google AdSense Top Banner Placement (Placeholder) -->
+  <aside class="max-w-6xl mx-auto px-4 w-full mt-4" aria-label="스폰서 영역">
+    <div class="bg-slate-100 border border-dashed border-slate-300 rounded-xl p-3 text-center text-xs text-slate-400">
+      <span>[Google AdSense] 반응형 디스플레이 광고 영역 (728×90 / 반응형)</span>
+      <!--
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+           data-ad-slot="XXXXXXXXXX"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+      -->
+    </div>
+  </aside>
+
+  <!-- Main Content Container -->
+  <main class="max-w-6xl mx-auto px-4 py-6 flex-grow w-full">
+    
+    <!-- Hero Banner -->
+    <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-slate-800 rounded-2xl p-6 text-white shadow-sm mb-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-2xl font-bold mb-1">🎯 네이버 블로그 홈판 & 검색 상위노출 진단기</h1>
+          <p class="text-emerald-100 text-sm">작성한 글을 붙여넣으면 공백 제외 글자수, 키워드 적정 반복(3~7회), 형태소 빈도 분석을 1초 만에 체크합니다.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs bg-white/20 px-3 py-1.5 rounded-full font-medium backdrop-blur-sm">⚡ 100% 브라우저 로컬 연산 (저장 없음)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Workspace (2-Column Grid) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left Column: Input Editor (7 Cols) -->
+      <div class="lg:col-span-7 space-y-4">
+        
+        <!-- Target Keyword & Title Card -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <!-- Target Keyword Input -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label for="target-keyword" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <span>🔑 타겟 핵심 키워드</span>
+                <span class="text-[11px] font-normal text-slate-400">(상위 노출을 노리는 검색어)</span>
+              </label>
+              <span id="keyword-badge" class="text-[11px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-500">키워드 입력 대기</span>
+            </div>
+            <div class="relative">
+              <input type="text" id="target-keyword" oninput="analyzeText()" placeholder="예: 연금저축펀드, 고속터미널 맛집, 맥북 에어 M3" class="w-full text-sm font-semibold text-slate-900 px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+          </div>
+
+          <!-- Post Title Input -->
+          <div>
+            <div class="flex justify-between items-center mb-1">
+              <label for="post-title" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <span>📌 포스팅 제목</span>
+                <span class="text-[11px] font-normal text-slate-400">(25~35자 권장)</span>
+              </label>
+              <span class="text-xs text-slate-500"><span id="title-char-count" class="font-bold text-slate-800">0</span>자</span>
+            </div>
+            <div class="relative">
+              <input type="text" id="post-title" oninput="analyzeText()" placeholder="제목에 타겟 키워드를 앞쪽에 배치하면 노출 확률이 급증합니다." class="w-full text-sm font-medium text-slate-900 px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+            </div>
+            <p id="title-feedback" class="text-[11px] text-slate-400 mt-1">💡 제목에 타겟 키워드가 포함되었는지 자동으로 감지합니다.</p>
+          </div>
+        </div>
+
+        <!-- Content Editor Card -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+            <span class="text-xs font-bold text-slate-700">📝 포스팅 본문 입력</span>
+            <div class="flex items-center space-x-2">
+              <button onclick="copyToClipboard()" class="text-xs px-2.5 py-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold transition flex items-center gap-1">
+                <span>📋 본문 복사</span>
+              </button>
+              <button onclick="clearText()" class="text-xs px-2.5 py-1 rounded text-slate-400 hover:text-red-500 font-medium transition">
+                ✕ 비우기
+              </button>
+            </div>
+          </div>
+
+          <!-- View Mode Toggle (Textarea vs Highlight View) -->
+          <div class="relative">
+            <textarea id="post-content" oninput="analyzeText()" placeholder="네이버 블로그에 작성할 본문 글을 여기에 자유롭게 붙여넣으세요. 실시간으로 글자수와 키워드 밀도가 분석됩니다." class="w-full h-96 text-sm text-slate-800 p-4 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 leading-relaxed resize-y"></textarea>
+            
+            <!-- Highlighting Overlay (hidden by default) -->
+            <div id="highlight-view" class="w-full h-96 text-sm text-slate-800 p-4 rounded-xl border border-slate-300 bg-slate-50 leading-relaxed overflow-y-auto hidden whitespace-pre-wrap break-words"></div>
+          </div>
+
+          <!-- Editor Footer Controls -->
+          <div class="flex items-center justify-between pt-1 text-xs">
+            <label class="flex items-center space-x-2 cursor-pointer text-slate-600 select-none">
+              <input type="checkbox" id="toggle-highlight" onchange="toggleHighlightMode()" class="accent-emerald-600 rounded">
+              <span class="font-medium">본문 내 타겟 키워드 형광펜 표시</span>
+            </label>
+            <span id="reading-time" class="text-slate-400 font-medium">예상 모바일 읽는 시간: 0분</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column: Live Analysis Dashboard (5 Cols) -->
+      <div class="lg:col-span-5 space-y-4">
+        
+        <!-- 1. 핵심 지표 요약 카드 (글자수 & 키워드) -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+          <h2 class="text-sm font-bold text-slate-900 border-b border-slate-100 pb-2 flex items-center justify-between">
+            <span>📊 실시간 상위노출 지표</span>
+            <span class="text-[11px] font-normal text-slate-400">네이버 C-Rank & DIA 로직 기준</span>
+          </h2>
+
+          <!-- 4대 메트릭 그리드 -->
+          <div class="grid grid-cols-2 gap-3">
+            <!-- 공백 제외 글자수 -->
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-semibold text-slate-500">공백 제외 글자수</span>
+                <span id="char-no-space-badge" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-slate-200 text-slate-600">0자</span>
+              </div>
+              <span class="text-2xl font-extrabold text-slate-900 mt-1 block" id="char-no-space">0<span class="text-xs font-normal text-slate-400 ml-1">자</span></span>
+              <!-- Progress bar towards 1500 chars -->
+              <div class="w-full bg-slate-200 h-1.5 rounded-full mt-2 overflow-hidden">
+                <div id="char-progress" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%"></div>
+              </div>
+              <span class="text-[10px] text-slate-400 mt-1 block">권장: 1,500 ~ 2,500자</span>
+            </div>
+
+            <!-- 타겟 키워드 반복 횟수 -->
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-semibold text-slate-500">타겟 키워드 반복</span>
+                <span id="keyword-count-badge" class="text-[10px] px-1.5 py-0.5 rounded font-bold bg-slate-200 text-slate-600">미입력</span>
+              </div>
+              <span class="text-2xl font-extrabold text-slate-900 mt-1 block" id="keyword-count">0<span class="text-xs font-normal text-slate-400 ml-1">회</span></span>
+              <div class="mt-2 text-[10px] flex justify-between font-medium">
+                <span class="text-slate-400">권장: 3 ~ 7회</span>
+                <span id="keyword-density" class="text-slate-500">밀도: 0.0%</span>
+              </div>
+            </div>
+
+            <!-- 공백 포함 글자수 -->
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+              <span class="text-[11px] font-semibold text-slate-500 block">공백 포함 글자수</span>
+              <span class="text-xl font-bold text-slate-800 mt-1 block" id="char-with-space">0<span class="text-xs font-normal text-slate-400 ml-1">자</span></span>
+            </div>
+
+            <!-- 문단 & 단어 수 -->
+            <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+              <span class="text-[11px] font-semibold text-slate-500 block">문단 수 / 단어 수</span>
+              <span class="text-xl font-bold text-slate-800 mt-1 block"><span id="paragraph-count">0</span><span class="text-xs font-normal text-slate-400 ml-1">문단</span> · <span id="word-count">0</span><span class="text-xs font-normal text-slate-400 ml-1">단어</span></span>
+            </div>
+          </div>
+
+          <!-- 키워드 신호등 가이드 박스 -->
+          <div id="traffic-light-box" class="p-3 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-600">
+            <span class="font-bold block mb-0.5 text-slate-700">🚦 키워드 반복 진단:</span>
+            <p id="traffic-light-desc" class="text-[11px] leading-relaxed">타겟 키워드를 상단에 입력하면 네이버 상위노출에 적합한 빈도인지 자동으로 알려드립니다.</p>
+          </div>
+        </div>
+
+        <!-- 2. 빈출 단어 TOP 10 (키워드 밀도 분석) -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <h3 class="text-xs font-bold text-slate-800">🔝 본문 최다 빈출 단어 TOP 10</h3>
+            <span class="text-[11px] text-slate-400">불용어 제외</span>
+          </div>
+
+          <div id="top-words-container" class="flex flex-wrap gap-1.5 pt-1">
+            <span class="text-xs text-slate-400">본문을 입력하면 자주 쓰인 단어가 자동으로 추출됩니다.</span>
+          </div>
+        </div>
+
+        <!-- 3. 네이버 홈판 상위노출 체크리스트 -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+          <h3 class="text-xs font-bold text-slate-800 border-b border-slate-100 pb-2">✅ 발행 전 필수 상위노출 체크리스트</h3>
+
+          <div class="space-y-2 text-xs text-slate-600" id="checklist">
+            <label class="flex items-center space-x-2.5">
+              <input type="checkbox" id="chk-length" disabled class="accent-emerald-600 w-4 h-4 rounded">
+              <span id="chk-length-label">공백 제외 1,500자 이상 작성하기</span>
+            </label>
+            <label class="flex items-center space-x-2.5">
+              <input type="checkbox" id="chk-title" disabled class="accent-emerald-600 w-4 h-4 rounded">
+              <span id="chk-title-label">포스팅 제목에 타겟 키워드 포함하기</span>
+            </label>
+            <label class="flex items-center space-x-2.5">
+              <input type="checkbox" id="chk-keyword-count" disabled class="accent-emerald-600 w-4 h-4 rounded">
+              <span id="chk-keyword-label">본문 속 키워드 3~7회 자연스럽게 반복하기</span>
+            </label>
+            <label class="flex items-center space-x-2.5">
+              <input type="checkbox" id="chk-photos" class="accent-emerald-600 w-4 h-4 rounded">
+              <span>직접 촬영/캡처한 사진 5~10장 첨부하기</span>
+            </label>
+            <label class="flex items-center space-x-2.5">
+              <input type="checkbox" id="chk-mobile" class="accent-emerald-600 w-4 h-4 rounded">
+              <span>문단당 2~3줄로 모바일 줄바꿈 가독성 챙기기</span>
+            </label>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Bottom Google AdSense Placement (Placeholder) -->
+    <aside class="w-full mt-8" aria-label="스폰서 영역">
+      <div class="bg-slate-100 border border-dashed border-slate-300 rounded-xl p-4 text-center text-xs text-slate-400">
+        <span>[Google AdSense] 인라인 광고 영역 (300×250 / 인피드 광고)</span>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 mt-12 py-8 text-xs text-slate-500">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div class="text-center sm:text-left">
+        <p class="font-bold text-slate-700">✍️ 블로그핏 (BlogFit)</p>
+        <p class="mt-1">네이버 블로그 전문 마케터와 크리에이터를 위한 스마트 글자수 & 상위노출 진단기</p>
+        <p class="text-slate-400 mt-0.5">입력하신 텍스트는 서버로 전송되지 않으며 오직 사용자 브라우저에서 안전하게 실시간 처리됩니다.</p>
+      </div>
+      <div class="flex space-x-4">
+        <button onclick="openModal('privacyModal')" class="hover:text-slate-800 underline">개인정보처리방침</button>
+        <button onclick="openModal('termsModal')" class="hover:text-slate-800 underline">이용약관</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Privacy Policy Modal -->
+  <div id="privacyModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white max-w-lg w-full rounded-2xl p-6 shadow-xl max-h-[80vh] overflow-y-auto text-xs space-y-4">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-slate-900">개인정보처리방침</h3>
+        <button onclick="closeModal('privacyModal')" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+      </div>
+      <p>블로그핏(BlogFit)은 이용자의 개인정보 및 작성 중인 원고의 저작권을 엄격히 보호합니다. 본 웹사이트에서 입력되는 제목 및 본문 텍스트는 어떠한 외부 서버로도 전송되거나 데이터베이스에 저장되지 않으며, 오직 이용자의 웹 브라우저 로컬 메모리 내에서만 실시간으로 연산 및 분석됩니다.</p>
+      <p>구글 애드센스 등 제3자 광고 사업자는 사용자의 웹사이트 방문 기록을 바탕으로 맞춤형 광고를 제공하기 위해 쿠키(Cookie)를 사용할 수 있습니다. 사용자는 브라우저 설정에서 쿠키 저장을 거부할 수 있습니다.</p>
+      <div class="text-right pt-2">
+        <button onclick="closeModal('privacyModal')" class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Terms Modal -->
+  <div id="termsModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white max-w-lg w-full rounded-2xl p-6 shadow-xl max-h-[80vh] overflow-y-auto text-xs space-y-4">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h3 class="font-bold text-sm text-slate-900">이용약관 및 면책조항</h3>
+        <button onclick="closeModal('termsModal')" class="text-slate-400 hover:text-slate-600 text-lg">&times;</button>
+      </div>
+      <p>본 서비스에서 제공하는 글자수, 키워드 반복 빈도, 상위노출 지침은 네이버 검색엔진 및 스마트에디터의 일반적인 공식 권장사항과 마케팅 실증 데이터를 기반으로 산출된 가이드입니다.</p>
+      <p>네이버의 비공개 검색 알고리즘 업데이트, 블로그의 기존 C-Rank 지수, 경쟁 문서 수 등에 따라 실제 검색 결과 노출 순위는 달라질 수 있으며, 본 사이트는 개별 포스팅의 상위노출 순위를 법적으로 보증하지 않습니다.</p>
+      <div class="text-right pt-2">
+        <button onclick="closeModal('termsModal')" class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-semibold">닫기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Logic -->
+  <script>
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function clearText() {
+      document.getElementById('post-title').value = '';
+      document.getElementById('target-keyword').value = '';
+      document.getElementById('post-content').value = '';
+      analyzeText();
+    }
+
+    function copyToClipboard() {
+      const content = document.getElementById('post-content').value;
+      if (!content.trim()) {
+        alert('복사할 본문 내용이 없습니다.');
+        return;
+      }
+      navigator.clipboard.writeText(content).then(() => {
+        alert('본문이 클립보드에 복사되었습니다! 네이버 블로그 스마트에디터에 바로 붙여넣기(Ctrl+V)하세요.');
+      }).catch(err => {
+        alert('복사에 실패했습니다.');
+      });
+    }
+
+    function toggleHighlightMode() {
+      const isChecked = document.getElementById('toggle-highlight').checked;
+      const textarea = document.getElementById('post-content');
+      const highlightView = document.getElementById('highlight-view');
+
+      if (isChecked) {
+        updateHighlightView();
+        textarea.classList.add('hidden');
+        highlightView.classList.remove('hidden');
+      } else {
+        highlightView.classList.add('hidden');
+        textarea.classList.remove('hidden');
+      }
+    }
+
+    function updateHighlightView() {
+      const content = document.getElementById('post-content').value;
+      const keyword = document.getElementById('target-keyword').value.trim();
+      const highlightView = document.getElementById('highlight-view');
+
+      if (!keyword) {
+        highlightView.innerText = content || '본문이 비어 있습니다.';
+        return;
+      }
+
+      // Escape regex special chars
+      const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${escaped})`, 'gi');
+      const safeContent = content.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const highlighted = safeContent.replace(regex, '<mark class="highlight-keyword">$1</mark>');
+      highlightView.innerHTML = highlighted;
+    }
+
+    function analyzeText() {
+      const title = document.getElementById('post-title').value;
+      const content = document.getElementById('post-content').value;
+      const keyword = document.getElementById('target-keyword').value.trim();
+
+      // 1. Title Analysis
+      document.getElementById('title-char-count').innerText = title.length;
+      const titleFeedback = document.getElementById('title-feedback');
+      const chkTitle = document.getElementById('chk-title');
+
+      if (keyword && title.includes(keyword)) {
+        titleFeedback.className = "text-[11px] text-emerald-600 font-semibold mt-1";
+        titleFeedback.innerText = "✨ 완벽해요! 제목에 타겟 키워드가 포함되어 있습니다.";
+        chkTitle.checked = true;
+      } else if (keyword && !title.includes(keyword)) {
+        titleFeedback.className = "text-[11px] text-amber-600 font-semibold mt-1";
+        titleFeedback.innerText = "⚠️ 주의: 제목에 타겟 키워드가 빠져 있습니다. 앞쪽에 배치해 보세요.";
+        chkTitle.checked = false;
+      } else {
+        titleFeedback.className = "text-[11px] text-slate-400 mt-1";
+        titleFeedback.innerText = "💡 제목에 타겟 키워드가 포함되었는지 자동으로 감지합니다.";
+        chkTitle.checked = false;
+      }
+
+      // 2. Character Counts
+      const charWithSpace = content.length;
+      const charNoSpace = content.replace(/\s/g, '').length;
+      const words = content.trim() ? content.trim().split(/\s+/).length : 0;
+      const paragraphs = content.trim() ? content.split(/\n+/).filter(p => p.trim().length > 0).length : 0;
+
+      document.getElementById('char-with-space').innerHTML = `${charWithSpace.toLocaleString()}<span class="text-xs font-normal text-slate-400 ml-1">자</span>`;
+      document.getElementById('char-no-space').innerHTML = `${charNoSpace.toLocaleString()}<span class="text-xs font-normal text-slate-400 ml-1">자</span>`;
+      document.getElementById('paragraph-count').innerText = paragraphs;
+      document.getElementById('word-count').innerText = words;
+
+      // Progress bar towards 1,500 chars
+      const progressPercent = Math.min(100, Math.round((charNoSpace / 1500) * 100));
+      document.getElementById('char-progress').style.width = progressPercent + '%';
+
+      // Length Badge & Checklist
+      const lenBadge = document.getElementById('char-no-space-badge');
+      const chkLength = document.getElementById('chk-length');
+
+      if (charNoSpace === 0) {
+        lenBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-slate-200 text-slate-600";
+        lenBadge.innerText = "0자";
+        chkLength.checked = false;
+      } else if (charNoSpace < 1000) {
+        lenBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-amber-100 text-amber-700";
+        lenBadge.innerText = "분량 부족";
+        chkLength.checked = false;
+      } else if (charNoSpace < 1500) {
+        lenBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-blue-100 text-blue-700";
+        lenBadge.innerText = "적정 도달 중";
+        chkLength.checked = false;
+      } else {
+        lenBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-700";
+        lenBadge.innerText = "상위노출 최적";
+        chkLength.checked = true;
+      }
+
+      // Reading time (approx 400 chars per minute on mobile)
+      const minutes = Math.ceil(charNoSpace / 400) || 0;
+      document.getElementById('reading-time').innerText = `예상 모바일 읽는 시간: 약 ${minutes}분 (${charNoSpace}자 기준)`;
+
+      // 3. Keyword Count & Density Analysis
+      const kwCountEl = document.getElementById('keyword-count');
+      const kwCountBadge = document.getElementById('keyword-count-badge');
+      const kwDensityEl = document.getElementById('keyword-density');
+      const kwBadge = document.getElementById('keyword-badge');
+      const trafficBox = document.getElementById('traffic-light-box');
+      const trafficDesc = document.getElementById('traffic-light-desc');
+      const chkKeyword = document.getElementById('chk-keyword-count');
+
+      let kwCount = 0;
+      if (keyword && content) {
+        const escaped = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const matches = content.match(new RegExp(escaped, 'gi'));
+        kwCount = matches ? matches.length : 0;
+      }
+
+      kwCountEl.innerHTML = `${kwCount}<span class="text-xs font-normal text-slate-400 ml-1">회</span>`;
+
+      if (!keyword) {
+        kwBadge.className = "text-[11px] px-2 py-0.5 rounded-full font-bold bg-slate-100 text-slate-500";
+        kwBadge.innerText = "키워드 미입력";
+        kwCountBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-slate-200 text-slate-600";
+        kwCountBadge.innerText = "미입력";
+        kwDensityEl.innerText = "밀도: 0.0%";
+        trafficBox.className = "p-3 rounded-xl bg-slate-100 border border-slate-200 text-xs text-slate-600";
+        trafficDesc.innerText = "타겟 키워드를 상단에 입력하면 네이버 상위노출에 적합한 빈도인지 자동으로 진단해 드립니다.";
+        chkKeyword.checked = false;
+      } else {
+        const density = charNoSpace > 0 ? ((kwCount * keyword.length) / charNoSpace * 100).toFixed(1) : 0;
+        kwDensityEl.innerText = `밀도: ${density}%`;
+
+        if (kwCount === 0) {
+          kwBadge.className = "text-[11px] px-2 py-0.5 rounded-full font-bold bg-red-100 text-red-700";
+          kwBadge.innerText = "본문 0회 (미반영)";
+          kwCountBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-red-100 text-red-700";
+          kwCountBadge.innerText = "0회 누락";
+          trafficBox.className = "p-3 rounded-xl bg-red-50 border border-red-200 text-xs text-red-800";
+          trafficDesc.innerText = `⚠️ 본문에 '${keyword}' 키워드가 한 번도 들어가지 않았습니다. 최소 3회 이상 자연스럽게 넣어주세요.`;
+          chkKeyword.checked = false;
+        } else if (kwCount <= 2) {
+          kwBadge.className = "text-[11px] px-2 py-0.5 rounded-full font-bold bg-amber-100 text-amber-800";
+          kwBadge.innerText = `${kwCount}회 (약간 부족)`;
+          kwCountBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-amber-100 text-amber-800";
+          kwCountBadge.innerText = "부족";
+          trafficBox.className = "p-3 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800";
+          trafficDesc.innerText = `🟡 '${keyword}' 키워드가 ${kwCount}회 들어갔습니다. 1~2회 더 자연스럽게 언급하면 네이버 로봇이 주제를 더 확실히 인식합니다.`;
+          chkKeyword.checked = false;
+        } else if (kwCount <= 7) {
+          kwBadge.className = "text-[11px] px-2 py-0.5 rounded-full font-bold bg-emerald-100 text-emerald-800";
+          kwBadge.innerText = `${kwCount}회 (황금 최적 구간)`;
+          kwCountBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-emerald-100 text-emerald-800";
+          kwCountBadge.innerText = "최적 🟢";
+          trafficBox.className = "p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800";
+          trafficDesc.innerText = `🎉 완벽해요! '${keyword}' 키워드가 총 ${kwCount}회로 네이버가 가장 선호하는 3~7회 황금 구간에 안착했습니다.`;
+          chkKeyword.checked = true;
+        } else {
+          kwBadge.className = "text-[11px] px-2 py-0.5 rounded-full font-bold bg-rose-100 text-rose-800";
+          kwBadge.innerText = `${kwCount}회 (과다 어뷰징 주의)`;
+          kwCountBadge.className = "text-[10px] px-1.5 py-0.5 rounded font-bold bg-rose-100 text-rose-800";
+          kwCountBadge.innerText = "과다 🔴";
+          trafficBox.className = "p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-800";
+          trafficDesc.innerText = `🚨 키워드가 ${kwCount}회로 너무 많습니다! 동일 키워드 8회 초과 시 네이버 검색엔진이 어뷰징(도배)으로 판단해 검색 누락될 위험이 있습니다. 1~2개를 동의어로 바꿔주세요.`;
+          chkKeyword.checked = false;
+        }
+      }
+
+      // 4. Frequent Words Extraction (Stopwords filtered)
+      extractTopWords(content);
+
+      if (document.getElementById('toggle-highlight').checked) {
+        updateHighlightView();
+      }
+    }
+
+    // Top words extractor
+    const STOP_WORDS = new Set([
+      '그', '이', '저', '수', '것', '등', '및', '때', '곳', '더', '또', '잘', '안', '못', '다',
+      '를', '을', '에', '의', '가', '이', '은', '는', '와', '과', '도', '로', '으로', '에서', '에게',
+      '하고', '하고는', '하면', '해서', '하는', '합니다', '했습니다', '있다', '있습니다', '없다', '없습니다',
+      '그리고', '하지만', '그런데', '따라서', '위해', '대한', '통해', '관한', '매우', '진짜', '너무', '정말'
+    ]);
+
+    function extractTopWords(text) {
+      const container = document.getElementById('top-words-container');
+      if (!text || text.trim().length < 5) {
+        container.innerHTML = '<span class="text-xs text-slate-400">본문을 입력하면 자주 쓰인 단어가 자동으로 추출됩니다.</span>';
+        return;
+      }
+
+      // Clean words: 2 to 8 chars
+      const rawWords = text.match(/[가-힣a-zA-Z0-9]{2,8}/g) || [];
+      const freq = {};
+
+      rawWords.forEach(w => {
+        const lower = w.toLowerCase();
+        if (!STOP_WORDS.has(lower) && isNaN(lower)) {
+          freq[lower] = (freq[lower] || 0) + 1;
+        }
+      });
+
+      const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+      if (sorted.length === 0) {
+        container.innerHTML = '<span class="text-xs text-slate-400">유효한 키워드가 아직 없습니다.</span>';
+        return;
+      }
+
+      container.innerHTML = sorted.map(([w, count], idx) => `
+        <span class="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition cursor-default">
+          <span class="text-[10px] font-bold text-emerald-600">#${idx + 1}</span>
+          <span class="font-semibold">${w}</span>
+          <span class="text-[10px] bg-white px-1.5 py-0.2 rounded-full border border-slate-200 text-slate-500 font-bold">${count}</span>
+        </span>
+      `).join('');
+    }
+
+    // Sample blog post loader
+    function loadSampleText() {
+      document.getElementById('target-keyword').value = '연금저축펀드';
+      document.getElementById('post-title').value = '2027 연금저축펀드 가입 가이드: 16.5% 세액공제와 ETF 추천 꿀팁';
+      document.getElementById('post-content').value = `직장인과 프리랜서라면 연말정산이나 5월 종합소득세 신고 때 무조건 챙겨야 하는 금융 상품이 있습니다. 바로 연금저축펀드입니다.\n\n연금저축펀드는 연간 최대 600만 원까지 납입할 수 있으며, 총급여 5,500만 원 이하일 경우 무려 16.5%의 세액공제 혜택을 제공합니다. 이는 1년에 최대 99만 원을 고스란히 돌려받는 셈입니다.\n\n특히 많은 분들이 예적금과 연금저축펀드 사이에서 고민하시는데요, 연금저축펀드는 주식형 ETF를 100% 담을 수 있어 복리 수익을 극대화할 수 있는 강력한 장점이 있습니다. S&P500이나 나스닥 지수를 추종하는 ETF를 장기 적립식으로 모아가기에 최적의 계좌입니다.\n\n또한 일반 위탁 계좌와 달리 과세이연 혜택이 있어, 배당금이나 매매차익에 대해 15.4%의 배당소득세를 매년 원천징수당하지 않고 55세 이후 연금 수령 시점까지 전액 복리로 재투자할 수 있습니다.\n\n이번 글에서는 연금저축펀드 신규 개설 방법과 초보자를 위한 안전한 포트폴리오 구성 전략을 상세히 정리해 드립니다. 지금 바로 확인해 보세요!`;
+      analyzeText();
+    }
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+      analyzeText();
+    });
+  </script>
+</body>
+</html>
