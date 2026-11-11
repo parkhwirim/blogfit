@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://blogfit-topaz.vercel.app/sitemap.xml
