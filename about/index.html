@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>블로그핏 소개 - 진단 기준과 운영 원칙 | 블로그핏</title>
+  <meta name="description" content="블로그핏이 무엇을 어떻게 진단하는지, 1,500자·3~7회 기준의 성격, 입력한 글이 처리되는 방식을 안내합니다.">
+  <link rel="canonical" href="https://blogfit-topaz.vercel.app/about/">
+  <meta property="og:title" content="블로그핏 소개 - 진단 기준과 운영 원칙 | 블로그핏">
+  <meta property="og:description" content="블로그핏이 무엇을 어떻게 진단하는지, 1,500자·3~7회 기준의 성격, 입력한 글이 처리되는 방식을 안내합니다.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://blogfit-topaz.vercel.app/about/">
+  <meta property="og:site_name" content="블로그핏">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <script>
+    window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+  </script>
+  <script defer src="/_vercel/insights/script.js"></script>
+  <script defer src="/_vercel/speed-insights/script.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Pretendard', 'sans-serif'] },
+          colors: {
+            naver: {
+              50: '#ecfdf5', 100: '#d1fae5', 500: '#10b981',
+              600: '#059669', green: '#03C75A', greenDark: '#02a84c'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+
+    body { font-family: 'Pretendard', sans-serif; background-color: #f8fafc; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .article { word-break: keep-all; }
+    .article h2 { font-size: 1.15rem; font-weight: 700; color: #0f172a; margin: 2.2rem 0 0.6rem; padding-top: 0.2rem; }
+    .article h3 { font-size: 1rem; font-weight: 700; color: #1e293b; margin: 1.5rem 0 0.4rem; }
+    .article p { font-size: 0.95rem; line-height: 1.9; color: #334155; margin: 0.7rem 0; }
+    .article ul, .article ol { margin: 0.7rem 0; padding-left: 1.3rem; }
+    .article ul { list-style: disc; }
+    .article ol { list-style: decimal; }
+    .article li { font-size: 0.95rem; line-height: 1.85; color: #334155; margin: 0.35rem 0; }
+    .article strong { color: #0f172a; font-weight: 700; }
+    .article .table-wrap { overflow-x: auto; margin: 1rem 0; -webkit-overflow-scrolling: touch; }
+    .article table { width: 100%; border-collapse: collapse; margin: 0; font-size: 0.85rem; min-width: 280px; }
+    .article th, .article td { border: 1px solid #e2e8f0; padding: 0.55rem 0.7rem; text-align: left; vertical-align: top; line-height: 1.6; }
+    .article th { background: #f1f5f9; font-weight: 700; color: #0f172a; }
+    .article .lead { font-size: 1rem; line-height: 1.9; color: #475569; margin-top: 1rem; }
+    .article .note { border-radius: 0.75rem; padding: 0.9rem 1rem; margin: 1.2rem 0; font-size: 0.88rem; line-height: 1.8; }
+    .article .note-amber { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    .article .note-slate { background: #f8fafc; border: 1px solid #e2e8f0; color: #475569; }
+    .article .sources { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #e2e8f0; }
+    .article .sources h3, .article .related h3 { font-size: 0.85rem; font-weight: 700; color: #64748b; margin: 0 0 0.4rem; }
+    .article .sources ul, .article .related ul { margin: 0; padding-left: 1.1rem; }
+    .article .sources li, .article .related li { font-size: 0.82rem; color: #64748b; }
+    .article .sources a, .article .related a { color: #2563eb; text-decoration: underline; }
+    .article .related { margin-top: 1.6rem; }
+    .article .disclaimer { margin-top: 2rem; background: #f1f5f9; border-radius: 0.75rem; padding: 0.9rem 1rem; }
+    .article .disclaimer p { font-size: 0.8rem; color: #64748b; line-height: 1.7; margin: 0; }
+    .article .cta { margin-top: 2rem; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; padding: 1.1rem 1.2rem; display: flex; flex-direction: column; gap: 0.7rem; }
+    .article .cta p { margin: 0; font-size: 0.83rem; color: #64748b; }
+    .article .cta-btn { display: inline-block; text-align: center; color: #ffffff; font-weight: 700; font-size: 0.9rem; padding: 0.65rem 1rem; border-radius: 0.6rem; }
+
+    .article .cta-btn { background: #059669; }
+  </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center space-x-2 shrink-0">
+        <span class="text-2xl">✍️</span>
+        <span class="font-bold text-lg sm:text-xl tracking-tight text-slate-900">블로그핏 <span class="hidden sm:inline text-xs bg-emerald-50 text-emerald-600 border-emerald-100 px-2 py-0.5 rounded-full font-semibold border">BlogFit</span></span>
+      </a>
+      <nav class="flex items-center space-x-0.5 sm:space-x-2 text-xs sm:text-sm">
+<a href="/" class="px-2 py-1.5 rounded-lg font-medium text-slate-600 hover:text-slate-900 ">진단기</a>
+<a href="/articles/" class="px-2 py-1.5 rounded-lg font-medium text-slate-600 hover:text-slate-900 ">가이드</a>
+<a href="/about/" class="px-2 py-1.5 rounded-lg font-medium text-slate-600 hover:text-slate-900 text-emerald-600 bg-emerald-50">소개</a>
+<a href="/contact/" class="px-2 py-1.5 rounded-lg font-medium text-slate-600 hover:text-slate-900 ">문의</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 py-8 flex-grow w-full">
+    <nav class="text-xs text-slate-400 mb-4" aria-label="현재 위치"><a href="/">홈</a> › 소개</nav>
+    <article class="article bg-white border border-slate-200 rounded-2xl p-5 sm:p-8 shadow-sm">
+<h1 class="text-2xl font-bold text-slate-900">블로그핏(BlogFit) 소개</h1><p class="lead">블로그핏은 네이버 블로그에 글을 쓰는 사람이 발행 전에 자기 글을 점검하도록 만든 무료 진단기입니다. 본문을 붙여넣으면 글자수, 키워드 반복, 빈출 단어를 브라우저에서 바로 계산합니다. 서버로 전송되는 내용은 없습니다.</p><h2>무엇을 진단하나요</h2><ul><li><strong>글자수</strong>: 공백을 포함한 글자수와 제외한 글자수를 함께 보여 주고, 1,500~2,500자 구간을 게이지로 표시합니다.</li><li><strong>키워드 반복</strong>: 지정한 타겟 키워드가 본문에 몇 번 나오는지 세고, 부족·적정·과다를 신호등으로 표시합니다.</li><li><strong>빈출 단어</strong>: 조사와 접속사 같은 불용어를 제거한 뒤 자주 쓰인 단어 상위 10개를 보여 줍니다.</li><li><strong>형광펜</strong>: 타겟 키워드가 본문 어디에 몰려 있는지 표시합니다.</li><li><strong>체크리스트</strong>: 글자수·제목·키워드 항목은 자동으로, 사진과 줄바꿈 항목은 직접 확인합니다.</li></ul><h2>진단 기준에 대해 알아둘 점</h2><p>1,500~2,500자, 키워드 3~7회 같은 숫자는 네이버가 공개한 공식 기준이 아닙니다. 네이버는 검색 랭킹에 C-Rank, D.I.A.+ 등 여러 알고리즘을 적용한다고 밝혔지만, 글자수나 반복 횟수의 기준값은 공개하지 않았습니다. 블로그핏의 구간은 공개된 안내와 블로그 운영에서 관찰된 경험칙을 도구 규칙으로 옮긴 것이며, 상위 노출을 보장하지 않습니다.</p><div class="note note-amber">진단 결과는 '최소 조건을 통과했는가'를 보는 신호입니다. 좋은 글인지 판단하는 기준이 아닙니다. 숫자가 초록불이어도 읽기 어려운 글은 검색에서 외면받습니다.</div><h2>입력한 글은 어디로 가나요</h2><p>제목과 본문, 타겟 키워드는 이용자의 브라우저 메모리 안에서만 처리됩니다. 서버로 전송되거나 저장되지 않고, 페이지를 닫으면 사라집니다. 회원가입과 로그인이 없어 작성 중인 원고가 외부에 남지 않습니다. 따라서 고객사 원고나 공개 전 기획안도 붙여넣어 점검할 수 있습니다.</p><h2>운영과 편집 원칙</h2><p>블로그핏은 개인이 직접 만들고 운영합니다. 운영자 개인 정보 대신 사이트 이름으로 안내합니다. 가이드 글은 네이버 검색 공식 블로그와 서치어드바이저 안내처럼 확인 가능한 자료를 근거로 쓰고, 공식 기준과 경험칙을 구분해 표시합니다. 확인되지 않은 수치를 공식 기준처럼 쓰지 않습니다.</p><p>사이트 운영 비용은 광고 수익으로 충당할 예정이며, 광고는 본문과 구분된 영역에만 표시합니다.</p><h2>문의</h2><p>오류 제보와 정정 요청은 <a href="mailto:hwirim7907@gmail.com" style="color:#059669;text-decoration:underline;">hwirim7907@gmail.com</a>으로 보내 주세요. <a href="/contact/" style="color:#059669;text-decoration:underline;">문의 페이지</a>에 받는 내용과 답변 기한을 정리해 두었습니다.</p><p class="text-xs text-slate-400 mt-6">최종 업데이트: 2026년 11월 14일</p>
+    </article>
+  </main>
+
+  <footer class="bg-white border-t border-slate-200 mt-12 py-8 text-xs text-slate-500">
+    <div class="max-w-3xl mx-auto px-4 space-y-3">
+      <div class="flex flex-wrap gap-x-4 gap-y-2 justify-center sm:justify-start">
+<a href="/" class="hover:text-slate-800 underline">진단기</a>
+<a href="/articles/" class="hover:text-slate-800 underline">가이드</a>
+<a href="/about/" class="hover:text-slate-800 underline">소개</a>
+<a href="/contact/" class="hover:text-slate-800 underline">문의</a>
+<a href="/privacy/" class="hover:text-slate-800 underline">개인정보처리방침</a>
+      </div>
+      <div>
+        <p class="font-bold text-slate-700">✍️ 블로그핏 (BlogFit)</p>
+        <p class="mt-1">네이버 블로그 글자수 & 키워드 상위노출 진단기</p>
+        <p class="text-slate-400 mt-0.5">입력하신 텍스트는 서버로 전송되지 않으며 브라우저에서만 처리됩니다.</p>
+      </div>
+      <p class="text-slate-400">© 2026 블로그핏. 모든 계산과 분석은 이용자의 브라우저에서 이루어집니다.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
